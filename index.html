@@ -1844,6 +1844,7 @@
             .facebook-nav { display: none; }
 
             body { background: transparent; }
+            body::after { background-attachment: scroll; }
 
             header { padding: 1rem; }
 
@@ -2505,18 +2506,6 @@
             z-index: -1;
             pointer-events: none;
             opacity: 1;
-            /* Promotion GPU : évite le repaint à chaque frame de scroll sur mobile */
-            will-change: transform;
-            transform: translateZ(0);
-        }
-
-        @media (max-width: 1050px) {
-            body::after {
-                background-image: url('https://i.imgur.com/MxM3Se0.jpeg');
-                background-size: cover;
-                background-repeat: no-repeat;
-                background-position: top center;
-            }
         }
 
         @keyframes dropBounce {
@@ -2790,33 +2779,7 @@
         </symbol>
     </svg>
     <noscript><style>#site-cover{display:none}</style></noscript>
-    <div id="site-cover" style="position:fixed;inset:0;z-index:9998;transition:opacity 0.4s ease;"></div>
-    <script>
-        (function() {
-            var cover = document.getElementById('site-cover');
-            if (!cover) return;
-            var isMobile = window.innerWidth <= 1050;
-            var imgSrc = isMobile
-                ? 'https://i.imgur.com/MxM3Se0.jpeg'
-                : 'https://i.imgur.com/SF7rXmN.jpeg';
-
-            // Précharger dynamiquement la bonne image
-            var preload = document.createElement('link');
-            preload.rel = 'preload';
-            preload.as = 'image';
-            preload.href = imgSrc;
-            document.head.appendChild(preload);
-
-            if (isMobile) {
-                cover.style.backgroundImage = "url('" + imgSrc + "')";
-                cover.style.backgroundSize = '100% auto';
-                cover.style.backgroundRepeat = 'repeat-y';
-                cover.style.backgroundPosition = 'top center';
-            } else {
-                cover.style.background = "url('" + imgSrc + "') center top/cover";
-            }
-        })();
-    </script>
+    <div id="site-cover" style="position:fixed;inset:0;z-index:9998;transition:opacity 0.4s ease;background:url('https://i.imgur.com/SF7rXmN.jpeg') center top/cover;"></div>
     <script>
         (function() {
             var img = new Image();
