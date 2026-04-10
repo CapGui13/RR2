@@ -242,7 +242,7 @@
         }
 
         /* === MOBILE SCROLL FIX === */
-        @media (max-width: 728px) {
+        @media (max-width: 700px) {
             html {
                 /* Momentum scroll natif iOS — glisse librement, ralentit en approchant des bords */
                 -webkit-overflow-scrolling: touch;
@@ -388,7 +388,7 @@
         }
 
         .logo-subtitle-city {
-            display: none; /* Caché sur desktop — affiché uniquement via @media (max-width: 728px) */
+            display: none; /* Caché sur desktop — affiché uniquement via @media (max-width: 700px) */
         }
 
         .logo-right img {
@@ -420,7 +420,7 @@
         }
 
         /* Quand la nav déborde (zoom élevé), elle se repositionne normalement */
-        @media (max-width: 1050px) and (min-width: 721px) {
+        @media (max-width: 1050px) and (min-width: 711px) {
             /* Annuler le débordement desktop du logo-right */
             .logo-right {
                 align-self: center;
@@ -485,7 +485,7 @@
             transition: opacity 1.5s ease 0.3s;
         }
 
-        @media (max-width: 728px) {
+        @media (max-width: 700px) {
             body.animate .nav-card-container {
                 transition: opacity 2s ease 0.7s;
             }
@@ -1839,10 +1839,92 @@
             }
         }
 
+        /* === ACCORDÉON : Galaxy Tab S4 (712px) + mobiles ≤ 743px === */
+        @media (max-width: 743px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                gap: 0.6rem;
+                margin-top: 1rem;
+                padding: 0 1rem;
+            }
+
+            .section-card {
+                padding: 0;
+                overflow: visible;
+            }
+
+            .section-card-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                width: 100%;
+                background: linear-gradient(135deg, #2d5a3d 0%, #1a4d2e 100%);
+                color: white;
+                border: none;
+                padding: 1rem 1.2rem;
+                cursor: pointer;
+                text-align: left;
+                font-family: inherit;
+                border-radius: 12px;
+                transition: background 0.3s ease;
+                position: relative;
+                z-index: 1;
+            }
+
+            .section-card.accordion-open .section-card-toggle {
+                border-radius: 12px;
+                background: linear-gradient(135deg, #3a6e4f 0%, #245c38 100%);
+            }
+
+            .section-card:nth-child(1) .section-card-toggle { border-top: 2px solid #667eea; }
+            .section-card:nth-child(2) .section-card-toggle { border-top: 2px solid #d4af37; }
+            .section-card:nth-child(3) .section-card-toggle { border-top: 2px solid #667eea; }
+
+            .section-card-toggle-title {
+                font-size: 1.15rem;
+                font-weight: 700;
+                font-style: italic;
+                letter-spacing: 0.03em;
+            }
+
+            .section-card-toggle-icon {
+                font-size: 1.3rem;
+                transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+                flex-shrink: 0;
+                margin-left: 0.8rem;
+            }
+
+            .section-card.accordion-open .section-card-toggle-icon {
+                transform: rotate(180deg);
+            }
+
+            .card-content {
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                padding: 0 1.2rem;
+                background: rgba(255,255,255,0.97);
+                border-radius: 0 0 12px 12px;
+                margin-top: -10px;
+                padding-top: 0;
+                position: relative;
+                z-index: 0;
+            }
+
+            .section-card.accordion-open .card-content {
+                padding-top: 18px;
+            }
+
+            .section-title {
+                display: none;
+                font-size: 1.2rem;
+            }
+        }
+
         /* FB header visible sur tous les écrans */
         .facebook-header { display: none; }
 
-        @media (max-width: 728px) {
+        @media (max-width: 700px) {
             .facebook-header { display: flex; }
             .facebook-nav { display: none; }
 
@@ -2466,7 +2548,7 @@
             transition: color 0.25s ease;
         }
 
-        @media (max-width: 728px) {
+        @media (max-width: 700px) {
             .footer-tel-icon {
                 display: inline-block;
                 filter: grayscale(1) sepia(1) saturate(10) hue-rotate(310deg);
@@ -2491,7 +2573,7 @@
         .footer-copy-sep {
             color: rgba(255,255,255,0.55);
         }
-        @media (max-width: 728px) {
+        @media (max-width: 700px) {
             .footer-copy-sep { display: none; }
             .footer-copy-address {
                 display: block;
@@ -2589,7 +2671,7 @@
             100% { transform: scaleY(0); }
         }
 
-        @media (max-width: 728px) {
+        @media (max-width: 700px) {
             /* Sur mobile : les 3 sections forment un seul bloc qui glisse depuis le bas */
             .main-container {
                 transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
@@ -2712,7 +2794,7 @@
             z-index: 997;
         }
 
-        @media (max-width: 728px) {
+        @media (max-width: 700px) {
             .back-to-top { display: flex; }
         }
 
@@ -4185,7 +4267,7 @@
             const navCard = document.querySelector('.nav-card-container');
 
             function updateParallax() {
-                const isMobile = window.innerWidth <= 728;
+                const isMobile = window.innerWidth <= 700;
                 if (isMobile) {
                     if (logoSection) {
                         logoSection.style.transform = '';
@@ -4279,7 +4361,7 @@
 
             // Lancer l'observer seulement quand le site est révélé
             window._startReveal = function() {
-                const isMobile = window.innerWidth <= 728;
+                const isMobile = window.innerWidth <= 700;
                 const triggerAll = () => {
                     if (isMobile) {
                         // Mobile : les sections apparaissent en un seul bloc depuis le bas, plus tard
@@ -4318,7 +4400,7 @@
             // Si on redimensionne vers mobile après que le site soit déjà révélé en desktop,
             // s'assurer que .mobile-revealed est bien appliqué
             window.addEventListener('resize', function() {
-                if (window.innerWidth <= 728) {
+                if (window.innerWidth <= 743) {
                     const mainContainer = document.querySelector('.main-container');
                     if (mainContainer && !mainContainer.classList.contains('mobile-revealed')) {
                         mainContainer.classList.add('mobile-revealed');
@@ -4334,7 +4416,7 @@
         // === ACCORDÉON MOBILE ===
         (function() {
             function isMobile() {
-                return window.innerWidth <= 728;
+                return window.innerWidth <= 743;
             }
 
             function openCard(card) {
