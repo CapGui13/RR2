@@ -420,7 +420,7 @@
         }
 
         /* Quand la nav déborde (zoom élevé), elle se repositionne normalement */
-        @media (max-width: 1050px) and (min-width: 550px) {
+        @media (max-width: 1050px) and (min-width: 711px) {
             /* Annuler le débordement desktop du logo-right */
             .logo-right {
                 align-self: center;
@@ -428,10 +428,10 @@
             }
             /* Nav : repositionnée sous le header avec espace */
             .nav-card-container {
-                position: static;
+                position: relative;
                 left: auto;
                 transform: none;
-                margin-top: 0;
+                margin-top: 1.8rem;
                 white-space: nowrap;
                 justify-content: center;
                 width: 100%;
@@ -617,14 +617,8 @@
             margin: 1rem auto;
             padding: 0 1.5rem;
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(3, 1fr);
             gap: 1rem;
-        }
-
-        @media (min-width: 1200px) {
-            .main-container {
-                grid-template-columns: repeat(3, 1fr);
-            }
         }
 
         @keyframes fadeInUp {
@@ -1845,8 +1839,8 @@
             }
         }
 
-        /* === ACCORDÉON : mobiles ≤ 549px === */
-        @media (max-width: 549px) {
+        /* === ACCORDÉON : Galaxy Tab S4 (712px) + mobiles ≤ 743px === */
+        @media (max-width: 743px) {
             .main-container {
                 grid-template-columns: 1fr;
                 gap: 0.6rem;
@@ -4406,7 +4400,7 @@
             // Si on redimensionne vers mobile après que le site soit déjà révélé en desktop,
             // s'assurer que .mobile-revealed est bien appliqué
             window.addEventListener('resize', function() {
-                if (window.innerWidth <= 549) {
+                if (window.innerWidth <= 743) {
                     const mainContainer = document.querySelector('.main-container');
                     if (mainContainer && !mainContainer.classList.contains('mobile-revealed')) {
                         mainContainer.classList.add('mobile-revealed');
@@ -4422,7 +4416,7 @@
         // === ACCORDÉON MOBILE ===
         (function() {
             function isMobile() {
-                return window.innerWidth <= 549;
+                return window.innerWidth <= 743;
             }
 
             function openCard(card) {
