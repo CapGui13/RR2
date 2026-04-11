@@ -617,8 +617,15 @@
             margin: 1rem auto;
             padding: 0 1.5rem;
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: 1fr;
             gap: 1rem;
+        }
+
+        /* 3 colonnes uniquement sur desktop */
+        @media (min-width: 1200px) {
+            .main-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
         }
 
         @keyframes fadeInUp {
