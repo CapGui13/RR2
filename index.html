@@ -1831,11 +1831,44 @@
         /* === TABLETTE (601px – 1199px) : 1 colonne empilée, cartes toujours ouvertes === */
         @media (min-width: 601px) and (max-width: 1199px) {
 
+            /* Header en colonne pour que la nav se place sous le logo */
+            .header-content {
+                flex-direction: column;
+                align-items: center;
+                gap: 0.8rem;
+            }
+
+            /* Nav sous le header, horizontale sur une ligne */
+            .nav-card-container {
+                position: relative;
+                left: auto;
+                transform: none;
+                margin-top: 0;
+                justify-content: center;
+                width: 100%;
+                padding: 0 1rem;
+            }
+
+            .nav-card {
+                flex-wrap: nowrap;
+                justify-content: center;
+                gap: 0.4rem;
+                padding: 0.6rem 0.8rem;
+                width: 100%;
+            }
+
+            .nav-card button {
+                padding: 0.55rem 0.85rem;
+                font-size: 0.82rem;
+                white-space: nowrap;
+            }
+
             /* Grille 1 colonne */
             .main-container {
                 grid-template-columns: 1fr;
                 gap: 1.2rem;
-                padding: 0 2rem;
+                padding: 0 1.5rem;
+                margin-top: 1rem;
             }
 
             /* Cartes toujours visibles, pas d'accordéon */
@@ -1844,7 +1877,7 @@
             }
 
             .section-card-toggle {
-                display: none; /* Pas d'accordéon sur tablette */
+                display: none !important;
             }
 
             .card-content {
@@ -1855,14 +1888,9 @@
             }
 
             .section-title {
-                display: block;
+                display: block !important;
                 font-size: 1.4rem;
             }
-
-            /* Textes légèrement réduits */
-            .logo-text h1,
-            .logo-title::after { font-size: 3rem; }
-            .logo-text p { font-size: 1.15rem; }
 
             .info-block h3 { font-size: 0.95rem; }
             .info-block p { font-size: 0.85rem; }
@@ -1876,24 +1904,6 @@
 
             .tarifs-grid .tarif-card:first-child {
                 padding: 2rem;
-            }
-
-            /* Nav tablette : horizontale sous le header */
-            .nav-card-container {
-                position: relative;
-                left: auto;
-                transform: none;
-                margin-top: 1rem;
-                justify-content: center;
-                width: 100%;
-                padding: 0 1rem;
-            }
-
-            .nav-card {
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 0.5rem;
-                padding: 0.7rem 1rem;
             }
 
             .contact-info-panel {
