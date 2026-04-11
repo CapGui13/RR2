@@ -1821,17 +1821,79 @@
             }
         }
 
-        /* === RESPONSIVE === */
-        @media (max-width: 1200px) {
-            .main-container,
+        /* ============================================================
+           BREAKPOINTS RESPONSIVES
+           - Desktop  : ≥ 1200px  (3 colonnes, tailles pleine échelle)
+           - Tablette : 701px – 1199px  (1 colonne empilée, sans accordéon)
+           - Mobile   : ≤ 700px   (1 colonne, accordéon, tailles compactes)
+        ============================================================ */
+
+        /* === TABLETTE (701px – 1199px) : 1 colonne empilée, cartes toujours ouvertes === */
+        @media (min-width: 701px) and (max-width: 1199px) {
+
+            /* Grille 1 colonne */
+            .main-container {
+                grid-template-columns: 1fr;
+                gap: 1.2rem;
+                padding: 0 2rem;
+            }
+
+            /* Cartes toujours visibles, pas d'accordéon */
+            .section-card {
+                padding: 1.5rem;
+            }
+
+            .section-card-toggle {
+                display: none; /* Pas d'accordéon sur tablette */
+            }
+
+            .card-content {
+                max-height: none !important;
+                overflow: visible !important;
+                padding: 0 !important;
+                padding-top: 0 !important;
+            }
+
+            .section-title {
+                display: block;
+                font-size: 1.4rem;
+            }
+
+            /* Textes légèrement réduits */
+            .logo-text h1,
+            .logo-title::after { font-size: 3rem; }
+            .logo-text p { font-size: 1.15rem; }
+
+            .info-block h3 { font-size: 0.95rem; }
+            .info-block p { font-size: 0.85rem; }
+
+            /* Grilles internes des modales en 1 colonne */
             .location-content,
             .tarifs-grid,
             .equipe-grid {
                 grid-template-columns: 1fr;
             }
-            
+
             .tarifs-grid .tarif-card:first-child {
                 padding: 2rem;
+            }
+
+            /* Nav tablette : horizontale sous le header */
+            .nav-card-container {
+                position: relative;
+                left: auto;
+                transform: none;
+                margin-top: 1rem;
+                justify-content: center;
+                width: 100%;
+                padding: 0 1rem;
+            }
+
+            .nav-card {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.5rem;
+                padding: 0.7rem 1rem;
             }
 
             .contact-info-panel {
@@ -1839,8 +1901,8 @@
             }
         }
 
-        /* === ACCORDÉON : Galaxy Tab S4 (712px) + mobiles ≤ 743px === */
-        @media (max-width: 743px) {
+        /* === ACCORDÉON MOBILE : ≤ 700px === */
+        @media (max-width: 700px) {
             .main-container {
                 grid-template-columns: 1fr;
                 gap: 0.6rem;
