@@ -212,9 +212,19 @@
         body.scroll-locked {
             overflow: hidden;
             touch-action: none;
-            /* position:fixed + top négatif = empêche iOS de scroller le fond */
             position: fixed;
             width: 100%;
+        }
+
+        /* Sur mobile : pas de position:fixed sur le body (évite le saut du fond) */
+        @media (max-width: 700px) {
+            body.scroll-locked {
+                position: static;
+                overflow: hidden;
+            }
+            html.scroll-locked {
+                overflow: hidden;
+            }
         }
 
         /* Scrollable containers inside modals: allow vertical pan */
@@ -3970,20 +3980,27 @@
 
         function lockScroll() {
             _scrollY = window.scrollY;
-            // Calcule la largeur de la scrollbar pour éviter le saut de layout
-            const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-            document.documentElement.style.paddingRight = scrollbarWidth + 'px';
-            // Appliquer top AVANT position:fixed — flush du layout pour éviter le saut sur mobile
-            document.body.style.top = `-${_scrollY}px`;
-            document.body.offsetHeight; // force reflow : top est calculé avant que position:fixed soit activé
-            document.body.classList.add('scroll-locked');
+            if (window.innerWidth <= 700) {
+                // Mobile : overflow hidden uniquement, sans position:fixed (évite le saut du fond)
+                document.documentElement.classList.add('scroll-locked');
+                document.body.classList.add('scroll-locked');
+            } else {
+                const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+                document.documentElement.style.paddingRight = scrollbarWidth + 'px';
+                document.body.style.top = `-${_scrollY}px`;
+                document.body.offsetHeight;
+                document.body.classList.add('scroll-locked');
+            }
         }
 
         function unlockScroll() {
+            document.documentElement.classList.remove('scroll-locked');
             document.body.classList.remove('scroll-locked');
             document.body.style.top = '';
             document.documentElement.style.paddingRight = '';
-            window.scrollTo(0, _scrollY);
+            if (window.innerWidth > 700) {
+                window.scrollTo(0, _scrollY);
+            }
         }
 
         // === OVERLAY MANAGEMENT ===
