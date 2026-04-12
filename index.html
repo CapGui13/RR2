@@ -2991,9 +2991,12 @@
                     doReveal();
                 }
             }
+            var imgToLoad = window.innerWidth <= 1050
+                ? 'https://i.imgur.com/PcEwjZX.jpeg'
+                : 'https://i.imgur.com/SF7rXmN.jpeg';
             img.onload = img.onerror = revealSite;
             setTimeout(revealSite, 2000);
-            img.src = 'https://i.imgur.com/SF7rXmN.jpeg';
+            img.src = imgToLoad;
         })();
     </script>
     <!-- BOUTON RETOUR EN HAUT -->
