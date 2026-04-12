@@ -2874,9 +2874,9 @@
     <style>
         #bg-mobile { display: none; }
         @media (max-width: 1050px) {
-            #bg-mobile { display: block; position: absolute; top: 0; left: 0; right: 0; min-height: 100%; z-index: -1; pointer-events: none;
-                background: url('https://i.imgur.com/MxM3Se0.jpeg') top center / 100% auto repeat-y; }
-            #site-cover { background-image: url('https://i.imgur.com/MxM3Se0.jpeg') !important;
+            #bg-mobile { display: block; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+                background: url('https://i.imgur.com/PcEwjZX.jpeg') top center / 100% auto repeat-y; }
+            #site-cover { background-image: url('https://i.imgur.com/PcEwjZX.jpeg') !important;
                 background-size: 100% auto !important; background-repeat: repeat-y !important;
                 background-position: top center !important; }
         }
@@ -2889,7 +2889,7 @@
             if (!cover) return;
             var isMobile = window.innerWidth <= 1050;
             var imgSrc = isMobile
-                ? 'https://i.imgur.com/MxM3Se0.jpeg'
+                ? 'https://i.imgur.com/PcEwjZX.jpeg'
                 : 'https://i.imgur.com/SF7rXmN.jpeg';
 
             // Précharger dynamiquement la bonne image
