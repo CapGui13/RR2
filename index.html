@@ -586,10 +586,16 @@
             }
         }
 
-        .nav-card button:active,
         .nav-card button.is-tapped {
             transform: scale(1.05);
             box-shadow: 0 6px 20px rgba(26,77,46,0.45), 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .nav-card button:active {
+                transform: scale(1.05);
+                box-shadow: 0 6px 20px rgba(26,77,46,0.45), 0 2px 6px rgba(0,0,0,0.2);
+            }
         }
 
         /* Bloque toute transition pendant le scroll sur mobile */
