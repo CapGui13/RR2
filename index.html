@@ -4576,6 +4576,7 @@
             // Lancer l'observer seulement quand le site est révélé
             window._startReveal = function() {
                 const isMobile = window.innerWidth <= 599;
+                const isTablet = window.innerWidth >= 600 && window.innerWidth <= 1024;
                 const triggerAll = () => {
                     if (isMobile) {
                         // Mobile : les sections apparaissent en un seul bloc depuis le bas, plus tard
@@ -4591,7 +4592,7 @@
                             el.classList.add('content-reveal');
                         });
                     } else {
-                        // Desktop : animation en cascade originale
+                        // Desktop & Tablette : animation en cascade originale
                         const CARD_STAGGER = 200;
                         const CONTENT_DELAY = 350;
                         sectionCards.forEach((el, i) => {
