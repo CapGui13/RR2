@@ -208,55 +208,23 @@
             scrollbar-color: #888 #1a1a1a;
         }
 
-        /*
-         * ============================================================
-         * SCROLL LOCK — STRATÉGIE ANTI-DÉCALAGE LATÉRAL
-         * ============================================================
-         *
-         * PROBLÈME À NE PAS RECRÉER :
-         * Quand une modale s'ouvre, on veut bloquer le scroll de la page
-         * derrière. L'erreur classique est d'appliquer overflow:hidden
-         * sur <html> — cela fait disparaître la scrollbar ET l'espace
-         * qu'elle occupait (~15px), ce qui décale tout le contenu vers
-         * la droite au moment de l'ouverture.
-         *
-         * SOLUTION CORRECTE (3 règles à ne jamais modifier ensemble) :
-         *
-         *   1. Sur <html> : déclarer scrollbar-gutter:stable (plus haut
-         *      dans ce fichier). Cela RÉSERVE l'espace de la scrollbar
-         *      en permanence, qu'elle soit visible ou non.
-         *
-         *   2. Sur html.scroll-locked : NE PAS mettre overflow:hidden.
-         *      Garder overflow-y:scroll pour que le gutter reste actif.
-         *      Si on passe html à overflow:hidden, le gutter est détruit
-         *      et le décalage revient immédiatement.
-         *
-         *   3. Bloquer le scroll UNIQUEMENT via body.scroll-locked
-         *      avec overflow:hidden. Le body n'a pas de scrollbar propre
-         *      dans cette config, donc aucun espace ne disparaît.
-         *
-         * RÈGLE D'OR : ne jamais compenser le décalage avec paddingRight
-         * en JS — c'est un patch fragile. La bonne approche est de
-         * l'empêcher structurellement avec scrollbar-gutter:stable.
-         *
-         * NE PAS FAIRE :
-         *   html.scroll-locked { overflow: hidden; }           ← décalage
-         *   document.documentElement.style.paddingRight = ...  ← patch JS
-         *   document.body.style.paddingRight = ...             ← patch JS
-         *
-         * FAIRE :
-         *   html                { scrollbar-gutter: stable; }  ← réserve l'espace
-         *   html.scroll-locked  { overflow-y: scroll; }        ← maintient le gutter
-         *   body.scroll-locked  { overflow: hidden; }          ← bloque le scroll
-         * ============================================================
-         */
-        html.scroll-locked {
-            overflow-y: scroll; /* IMPORTANT : garder scroll (pas hidden) pour préserver scrollbar-gutter */
+        /* Scroll lock — bloque le fond sans saut de position */
+        body.scroll-locked {
+            overflow: hidden;
+            touch-action: none;
+            position: fixed;
+            width: 100%;
         }
 
-        body.scroll-locked {
-            overflow: hidden;   /* C'est ici que le scroll est réellement bloqué */
-            touch-action: none;
+        /* Sur mobile : pas de position:fixed sur le body (évite le saut du fond) */
+        @media (max-width: 700px) {
+            body.scroll-locked {
+                position: static;
+                overflow: hidden;
+            }
+            html.scroll-locked {
+                overflow: hidden;
+            }
         }
 
         /* Scrollable containers inside modals: allow vertical pan */
@@ -545,16 +513,16 @@
                 box-shadow: none !important;
             }
 
-            /* "Bridge Club du Roy René" sur une ligne */
+            /* "Bridge Club du Roy René" centré sous BCRR */
             .logo-text p.logo-subtitle-main {
-                font-size: 1.6rem;
+                font-size: 1.5rem;
                 white-space: nowrap;
-                margin-left: -1.5rem;
+                margin-left: 1.5rem;
             }
 
             /* FB + Comité légèrement plus hauts */
             .logo-right {
-                margin-top: -1.5rem;
+                margin-top: -1rem;
             }
         }
         body.animate .nav-card-container {
