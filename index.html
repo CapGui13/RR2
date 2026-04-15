@@ -207,24 +207,17 @@
         html[style*="overflow"] {
             scrollbar-color: #888 #1a1a1a;
         }
+        body {
+            scrollbar-color: #888 #1a1a1a;
+        }
 
-        /* Scroll lock — bloque le fond sans saut de position */
+        html.scroll-locked {
+            overflow: hidden;
+        }
+
         body.scroll-locked {
             overflow: hidden;
             touch-action: none;
-            position: fixed;
-            width: 100%;
-        }
-
-        /* Sur mobile : pas de position:fixed sur le body (évite le saut du fond) */
-        @media (max-width: 700px) {
-            body.scroll-locked {
-                position: static;
-                overflow: hidden;
-            }
-            html.scroll-locked {
-                overflow: hidden;
-            }
         }
 
         /* Scrollable containers inside modals: allow vertical pan */
@@ -4068,16 +4061,6 @@
 
         function lockScroll() {
             _scrollY = window.scrollY;
-            /*
-             * On ajoute scroll-locked sur html ET body.
-             * - html.scroll-locked : overflow-y:scroll (maintient le scrollbar-gutter)
-             * - body.scroll-locked : overflow:hidden (bloque effectivement le scroll)
-             *
-             * NE PAS ajouter de paddingRight ici pour "compenser la scrollbar" :
-             * si scrollbar-gutter:stable est correctement déclaré sur html et que
-             * html.scroll-locked ne l'écrase pas avec overflow:hidden, il n'y a
-             * aucun décalage à compenser — l'espace est déjà réservé en permanence.
-             */
             document.documentElement.classList.add('scroll-locked');
             document.body.classList.add('scroll-locked');
         }
@@ -4085,8 +4068,6 @@
         function unlockScroll() {
             document.documentElement.classList.remove('scroll-locked');
             document.body.classList.remove('scroll-locked');
-            // Pas de paddingRight à réinitialiser — on n'en applique pas.
-            window.scrollTo(0, _scrollY);
         }
 
         // === OVERLAY MANAGEMENT ===
