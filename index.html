@@ -211,38 +211,7 @@
             scrollbar-color: #888 #1a1a1a;
         }
 
-        html.scroll-locked {
-            overflow: hidden;
-        }
 
-        body.scroll-locked {
-            overflow: hidden;
-            touch-action: none;
-        }
-
-        /* Scrollable containers inside modals: allow vertical pan */
-        body.scroll-locked .dropdown-modal,
-        body.scroll-locked .contact-modal-content {
-            touch-action: pan-y;
-        }
-
-        /* Interactive elements inside modals: allow tap */
-        body.scroll-locked .dropdown-modal button,
-        body.scroll-locked .dropdown-modal a,
-        body.scroll-locked .dropdown-modal input,
-        body.scroll-locked .dropdown-modal textarea,
-        body.scroll-locked .dropdown-modal select,
-        body.scroll-locked .contact-modal-content button,
-        body.scroll-locked .contact-modal-content a,
-        body.scroll-locked .contact-modal-content input,
-        body.scroll-locked .contact-modal-content textarea,
-        body.scroll-locked .contact-modal-content select,
-        body.scroll-locked .lightbox-close,
-        body.scroll-locked .lightbox-prev,
-        body.scroll-locked .lightbox-next,
-        body.scroll-locked .modal-scroll-top {
-            touch-action: manipulation;
-        }
 
         /* === MOBILE SCROLL FIX === */
         @media (max-width: 599px) {
@@ -942,19 +911,25 @@
             overflow-y: auto;
             box-shadow: 0 10px 40px rgba(0,0,0,0.3);
             position: relative;
-            transform: scale(0.75);
+            /*
+             * ⚠️ NE PAS utiliser scale() ici.
+             * scale() déforme les éléments à dimensions fixes (photo, carte) pendant
+             * l'animation → glitch visuel perceptible à l'atterrissage de la modale.
+             * On anime uniquement translateY + opacity, qui n'altèrent pas le rendu interne.
+             */
+            transform: translateY(24px);
             opacity: 0;
             transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
                         opacity 0.35s ease;
         }
 
         .dropdown-overlay.active .dropdown-modal {
-            transform: scale(1) translateY(0);
+            transform: translateY(0);
             opacity: 1;
         }
 
         .dropdown-overlay.closing .dropdown-modal {
-            transform: scale(0.95) translateY(8px);
+            transform: translateY(12px);
             opacity: 0;
             transition: transform 0.25s ease, opacity 0.25s ease;
         }
@@ -2285,19 +2260,20 @@
                 max-height: 88dvh;
                 padding: 1.5rem;
                 border-radius: 16px;
-                transform: scale(0.94);
+                /* ⚠️ Pas de scale() — voir commentaire version desktop */
+                transform: translateY(20px);
                 opacity: 0;
                 transition: opacity 0.5s ease, transform 0.5s ease;
                 will-change: opacity, transform;
             }
 
             .dropdown-overlay.active .dropdown-modal {
-                transform: scale(1);
+                transform: translateY(0);
                 opacity: 1;
             }
 
             .dropdown-overlay.closing .dropdown-modal {
-                transform: scale(0.94);
+                transform: translateY(12px);
                 opacity: 0;
                 transition: opacity 0.3s ease, transform 0.3s ease;
             }
@@ -4086,17 +4062,55 @@
 
 
         // === SCROLL LOCK ===
+        //
+        // Mécanisme voulu : quand une modale s'ouvre, le fond est verrouillé (pas de scroll
+        // en arrière-plan). La scrollbar reste visible et devient grisée/inactive — c'est
+        // intentionnel, grâce à :
+        //   html { overflow-y: scroll; scrollbar-gutter: stable; }
+        // Ces deux règles CSS empêchent le layout shift (saut de page) qui se produirait
+        // si la scrollbar disparaissait à l'ouverture de la modale.
+        //
+        // ⚠️ COUPLAGE CRITIQUE avec le parallaxe header (updateParallax) :
+        // Quand body passe en position:fixed, le navigateur déclenche un faux événement
+        // "scroll" avec window.scrollY === 0. Sans protection, updateParallax() réinitialise
+        // le translateY du logo à 0 → la carte du Roi, le BCRR et le titre "Bridge Club du
+        // Roy René" sautent visuellement vers le haut.
+        //
+        // Solution : le flag _scrollLocked.
+        //   - lockScroll() le passe à true AVANT de fixer le body.
+        //   - unlockScroll() le repasse à false AVANT de restaurer la position.
+        //   - updateParallax() sort immédiatement si _scrollLocked === true,
+        //     ignorant ainsi le faux scroll déclenché par position:fixed.
+        //
+        // Ne pas supprimer _scrollLocked ni le check dans updateParallax sans remplacer
+        // ce mécanisme, sous peine de réintroduire le saut du header à l'ouverture des modales.
+
         let _scrollY = 0;
+        let _scrollLocked = false; // ← voir commentaire ci-dessus, couplé à updateParallax()
+
+        function _preventScroll(e) {
+            if (e.target.closest('.dropdown-modal, .lightbox, .contact-modal')) return;
+            e.preventDefault();
+        }
 
         function lockScroll() {
             _scrollY = window.scrollY;
-            document.documentElement.classList.add('scroll-locked');
-            document.body.classList.add('scroll-locked');
+            _scrollLocked = true; // doit être mis à true AVANT position:fixed (voir commentaire bloc)
+            window.addEventListener('wheel', _preventScroll, { passive: false });
+            window.addEventListener('touchmove', _preventScroll, { passive: false });
+            document.body.style.position = 'fixed';
+            document.body.style.top = `-${_scrollY}px`;
+            document.body.style.width = '100%';
         }
 
         function unlockScroll() {
-            document.documentElement.classList.remove('scroll-locked');
-            document.body.classList.remove('scroll-locked');
+            _scrollLocked = false; // doit être remis à false AVANT window.scrollTo (voir commentaire bloc)
+            window.removeEventListener('wheel', _preventScroll);
+            window.removeEventListener('touchmove', _preventScroll);
+            document.body.style.position = '';
+            document.body.style.top = '';
+            document.body.style.width = '';
+            window.scrollTo(0, _scrollY);
         }
 
         // === OVERLAY MANAGEMENT ===
@@ -4468,10 +4482,27 @@
             }
 
             // === PARALLAXE HEADER ===
+            //
+            // Effet de parallaxe sur .logo-section (carte du Roi, BCRR, titre) :
+            // translateY monte lentement (×0.25) et le logo devient transparent passé 220px.
+            //
+            // ⚠️ COUPLAGE CRITIQUE avec lockScroll / _scrollLocked :
+            // position:fixed sur le body (posé par lockScroll) génère un faux événement
+            // "scroll" avec window.scrollY === 0 côté navigateur. Sans le guard ci-dessous,
+            // updateParallax() remettrait translateY à 0 → saut visible du header à chaque
+            // ouverture de modale après avoir scrollé.
+            //
+            // Le guard `if (_scrollLocked) return;` est la seule protection contre ce bug.
+            // Ne pas le supprimer. Ne pas remplacer updateParallax par une version qui
+            // lirait window.scrollY sans ce check.
+            //
+            // updateParallax accepte aussi un paramètre forceScrollY (inutilisé en pratique
+            // depuis l'ajout du flag, conservé pour usage éventuel).
+
             const logoSection = document.querySelector('.logo-section');
             const navCard = document.querySelector('.nav-card-container');
 
-            function updateParallax() {
+            function updateParallax(forceScrollY) {
                 const isMobile = window.innerWidth <= 599;
                 if (isMobile) {
                     if (logoSection) {
@@ -4480,7 +4511,10 @@
                     }
                     return;
                 }
-                const scrollY = window.scrollY;
+                // ⚠️ Guard anti-saut header : position:fixed déclenche un faux scroll à 0.
+                // Sans ce return, le logo saute vers le haut à chaque ouverture de modale.
+                if (_scrollLocked) return;
+                const scrollY = (typeof forceScrollY === 'number') ? forceScrollY : window.scrollY;
                 if (logoSection) {
                     logoSection.style.transform = `translateY(${scrollY * 0.25}px)`;
                     logoSection.style.opacity = Math.max(0, 1 - scrollY / 220);
