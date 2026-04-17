@@ -2464,6 +2464,14 @@
             .gallery-grid {
                 grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
                 gap: 1rem;
+                min-height: 300px;
+            }
+            /* Hauteur fixe sur tablette : empêche la modale de changer de taille
+               selon le nombre de photos affichées (catégorie vide ou non) */
+            .gallery-modal {
+                height: 88dvh !important;
+                max-height: 88dvh !important;
+                overflow-y: auto;
             }
 
             .lightbox-prev,
@@ -3907,6 +3915,8 @@
         // === GALLERY INITIALIZATION ===
         function initGallery() {
             const grid = document.getElementById('galleryGrid');
+            const modal = document.querySelector('.gallery-modal');
+
             grid.innerHTML = '';
             
             filteredImages.forEach((img, index) => {
@@ -3924,6 +3934,21 @@
                 
                 grid.appendChild(item);
             });
+
+            /* Fige la hauteur maximale atteinte par la modale galerie.
+               Problème résolu : sur tablette, filtrer sur une catégorie vide
+               faisait rétrécir la modale et la repositionnait visuellement.
+               Solution : après chaque rendu, si la hauteur courante dépasse
+               le minHeight mémorisé, on l'enregistre en style inline.
+               Le minHeight est remis à zéro à chaque ouverture de la modale
+               (voir toggleOverlay > galleryDropdown) pour repartir proprement. */
+            if (modal) {
+                const currentH = modal.offsetHeight;
+                const lockedH = parseFloat(modal.style.minHeight) || 0;
+                if (currentH > lockedH) {
+                    modal.style.minHeight = currentH + 'px';
+                }
+            }
         }
 
         // === GALLERY FILTER ===
@@ -4224,6 +4249,9 @@
                 if (btn) { btn.classList.add('nav-active'); btn.setAttribute('aria-expanded', 'true'); }
 
                 if (id === 'galleryDropdown') {
+                    // Réinitialise la hauteur figée à chaque ouverture (voir commentaire dans initGallery)
+                    const galleryModal = overlay.querySelector('.gallery-modal');
+                    if (galleryModal) galleryModal.style.minHeight = '';
                     filteredImages = [...galleryImages];
                     initGallery();
                 }
