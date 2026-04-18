@@ -4210,6 +4210,10 @@
         }
 
         function lockScroll() {
+            // Idempotent : si une modale ouvre une autre modale (ex. gallery → admin),
+            // on ne re-capture pas la scrollY courante (qui vaudrait 0 avec body:fixed),
+            // sous peine de perdre la position réelle au déverrouillage.
+            if (_scrollLocked) return;
             _scrollY = window.scrollY;
             _scrollLocked = true; // doit être mis à true AVANT position:fixed (voir commentaire bloc)
             window.addEventListener('wheel', _preventScroll, { passive: false });
@@ -4220,6 +4224,10 @@
         }
 
         function unlockScroll() {
+            // Ne déverrouille que si plus aucune modale n'est ouverte.
+            // L'overlay en cours de fermeture a déjà perdu sa classe .active avant l'appel.
+            if (document.querySelector('.dropdown-overlay.active, .contact-modal.active, .lightbox.active')) return;
+            if (!_scrollLocked) return;
             _scrollLocked = false; // doit être remis à false AVANT window.scrollTo (voir commentaire bloc)
             window.removeEventListener('wheel', _preventScroll);
             window.removeEventListener('touchmove', _preventScroll);
@@ -4994,4 +5002,23 @@
             var THRESHOLD = 10;
             document.querySelectorAll('.nav-card button').forEach(function(btn) {
                 var sx = 0, sy = 0;
-                btn.addEventListener('touchstart', functio
+                btn.addEventListener('touchstart', function(e) {
+                    var t = e.touches[0];
+                    sx = t.clientX; sy = t.clientY;
+                }, { passive: true });
+                btn.addEventListener('touchend', function(e) {
+                    var t = e.changedTouches[0];
+                    if (Math.abs(t.clientX - sx) > THRESHOLD || Math.abs(t.clientY - sy) > THRESHOLD) return;
+                    btn.classList.add('is-tapped');
+                    setTimeout(function() { btn.classList.remove('is-tapped'); }, 300);
+                }, { passive: true });
+            });
+        })();
+    </script>
+    <style>
+        body.no-transition * { transition: none !important; }
+    </style>
+
+</body>
+</html>
+
